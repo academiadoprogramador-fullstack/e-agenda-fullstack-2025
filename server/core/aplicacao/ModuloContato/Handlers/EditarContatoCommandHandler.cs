@@ -1,4 +1,5 @@
-﻿using eAgenda.Core.Aplicacao.Compartilhado;
+﻿using AutoMapper;
+using eAgenda.Core.Aplicacao.Compartilhado;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.Compartilhado;
 using eAgenda.Core.Dominio.ModuloContato;
@@ -11,6 +12,7 @@ namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 public class EditarContatoCommandHandler(
     IRepositorioContato repositorioContato,
     IUnitOfWork unitOfWork,
+    IMapper mapper,
     ILogger<EditarContatoCommandHandler> logger
 ) : IRequestHandler<EditarContatoCommand, Result<EditarContatoResult>>
 {
@@ -24,26 +26,30 @@ public class EditarContatoCommandHandler(
 
         try
         {
-            var contatoEditado = new Contato(
-                command.Nome,
-                command.Telefone,
-                command.Email,
-                command.Empresa,
-                command.Cargo
-            );
+            //var contatoEditado = new Contato(
+            //    command.Nome,
+            //    command.Telefone,
+            //    command.Email,
+            //    command.Empresa,
+            //    command.Cargo
+            //);
+
+            var contatoEditado = mapper.Map<Contato>(command);
 
             await repositorioContato.EditarAsync(command.Id, contatoEditado);
 
             await unitOfWork.CommitAsync();
 
-            var result = new EditarContatoResult(
-                contatoEditado.Id,
-                contatoEditado.Nome,
-                contatoEditado.Telefone,
-                contatoEditado.Email,
-                contatoEditado.Empresa,
-                contatoEditado.Cargo
-            );
+            //var result = new EditarContatoResult(
+            //    contatoEditado.Id,
+            //    contatoEditado.Nome,
+            //    contatoEditado.Telefone,
+            //    contatoEditado.Email,
+            //    contatoEditado.Empresa,
+            //    contatoEditado.Cargo
+            //);
+
+            var result = mapper.Map<EditarContatoResult>(contatoEditado);
 
             return Result.Ok(result);
         }

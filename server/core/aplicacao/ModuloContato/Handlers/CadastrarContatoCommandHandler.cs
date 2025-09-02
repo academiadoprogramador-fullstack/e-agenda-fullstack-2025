@@ -1,4 +1,5 @@
-﻿using eAgenda.Core.Aplicacao.Compartilhado;
+﻿using AutoMapper;
+using eAgenda.Core.Aplicacao.Compartilhado;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.Compartilhado;
 using eAgenda.Core.Dominio.ModuloContato;
@@ -11,6 +12,7 @@ namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 public class CadastrarContatoCommandHandler(
     IRepositorioContato repositorioContato,
     IUnitOfWork unitOfWork,
+    IMapper mapper,
     ILogger<CadastrarContatoCommandHandler> logger
 ) : IRequestHandler<CadastrarContatoCommand, Result<CadastrarContatoResult>>
 {
@@ -24,19 +26,23 @@ public class CadastrarContatoCommandHandler(
 
         try
         {
-            var contato = new Contato(
-                command.Nome,
-                command.Telefone,
-                command.Email,
-                command.Empresa,
-                command.Cargo
-            );
+            //var contato = new Contato(
+            //    command.Nome,
+            //    command.Telefone,
+            //    command.Email,
+            //    command.Empresa,
+            //    command.Cargo
+            //);
+
+            var contato = mapper.Map<Contato>(command);
 
             await repositorioContato.CadastrarAsync(contato);
 
             await unitOfWork.CommitAsync();
 
-            var result = new CadastrarContatoResult(contato.Id);
+            //var result = new CadastrarContatoResult(contato.Id);
+
+            var result = mapper.Map<CadastrarContatoResult>(contato);
 
             return Result.Ok(result);
         }

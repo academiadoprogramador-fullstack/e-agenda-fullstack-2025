@@ -1,15 +1,16 @@
-﻿using eAgenda.Core.Aplicacao.Compartilhado;
+﻿using AutoMapper;
+using eAgenda.Core.Aplicacao.Compartilhado;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
 public class SelecionarContatosQueryHandler(
     IRepositorioContato repositorioContato,
+    IMapper mapper,
     ILogger<SelecionarContatosQueryHandler> logger
 ) : IRequestHandler<SelecionarContatosQuery, Result<SelecionarContatosResult>>
 {
@@ -24,16 +25,18 @@ public class SelecionarContatosQueryHandler(
             else
                 registros = await repositorioContato.SelecionarRegistrosAsync();
 
-            var result = new SelecionarContatosResult(
-                registros.Select(r => new SelecionarContatosDto(
-                    r.Id,
-                    r.Nome,
-                    r.Telefone,
-                    r.Email,
-                    r.Empresa,
-                    r.Cargo
-                )).ToImmutableList()
-            );
+            //var result = new SelecionarContatosResult(
+            //    registros.Select(r => new SelecionarContatosDto(
+            //        r.Id,
+            //        r.Nome,
+            //        r.Telefone,
+            //        r.Email,
+            //        r.Empresa,
+            //        r.Cargo
+            //    )).ToImmutableList()
+            //);
+
+            var result = mapper.Map<SelecionarContatosResult>(registros);
 
             return Result.Ok(result);
         }

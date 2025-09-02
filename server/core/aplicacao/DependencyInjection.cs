@@ -23,6 +23,11 @@ public static class DependencyInjection
             config.RegisterServicesFromAssembly(assembly);
         });
 
+        services.AddAutoMapper(config =>
+        {
+            config.LicenseKey = configuration["AUTOMAPPER_LICENSE_KEY"];
+        }, typeof(DependencyInjection).Assembly);
+
         return services;
     }
    
