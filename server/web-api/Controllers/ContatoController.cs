@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace eAgenda.WebApi.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("contatos")]
 public class ContatoController(IMediator mediator) : ControllerBase
 {
     [HttpPost]
@@ -60,7 +60,7 @@ public class ContatoController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("{contatoId:guid}")]
-    public async Task<ActionResult<EditarContatoResponse>> Excluir(Guid contatoId)
+    public async Task<ActionResult<ExcluirContatoResponse>> Excluir(Guid contatoId)
     {
         var command = new ExcluirContatoCommand(contatoId);
 
@@ -93,7 +93,7 @@ public class ContatoController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{contatoId:guid}")]
-    public async Task<ActionResult<SelecionarContatosResponse>> SelecionarRegistroPorId(Guid contatoId)
+    public async Task<ActionResult<SelecionarContatoPorIdResponse>> SelecionarRegistroPorId(Guid contatoId)
     {
         var query = new SelecionarContatoPorIdQuery(contatoId);
 
