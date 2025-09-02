@@ -10,5 +10,7 @@ public interface IRepositorio<T> where T : EntidadeBase<T>
 
     public Task<List<T>> SelecionarRegistrosAsync();
 
+    public Task<List<T>> SelecionarRegistrosAsync(int quantidade);
+
     public Task<T?> SelecionarRegistroPorIdAsync(Guid idRegistro);
 }
