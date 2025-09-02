@@ -48,7 +48,6 @@ public class ContatoController(IMediator mediator) : ControllerBase
             return BadRequest();
 
         var response = new EditarContatoResponse(
-            result.Value.Id,
             result.Value.Nome,
             result.Value.Telefone,
             result.Value.Email,

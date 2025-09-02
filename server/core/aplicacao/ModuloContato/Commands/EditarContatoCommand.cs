@@ -3,12 +3,19 @@ using MediatR;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Commands;
 
-public record CadastrarContatoCommand(
+public record EditarContatoCommand(
+    Guid Id,
     string Nome,
     string Telefone,
     string Email,
     string? Empresa,
     string? Cargo
-) : IRequest<Result<CadastrarContatoResult>>;
+) : IRequest<Result<EditarContatoResult>>;
 
-public record CadastrarContatoResult(Guid Id);
+public record EditarContatoResult(
+    string Nome,
+    string Telefone,
+    string Email,
+    string? Empresa,
+    string? Cargo
+);

@@ -9,7 +9,6 @@ public record EditarContatoRequest(
 );
 
 public record EditarContatoResponse(
-    Guid Id,
     string Nome,
     string Telefone,
     string Email,
