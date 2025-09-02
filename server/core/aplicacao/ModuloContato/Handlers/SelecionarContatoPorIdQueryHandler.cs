@@ -23,21 +23,6 @@ public class SelecionarContatoPorIdQueryHandler(
             if (registro is null)
                 return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(query.ContatoId));
 
-            //var result = new SelecionarContatoPorIdResult(
-            //    registro.Id,
-            //    registro.Nome,
-            //    registro.Telefone,
-            //    registro.Email,
-            //    registro.Empresa,
-            //    registro.Cargo,
-            //    registro.Compromissos.Select(r => new DetalhesCompromissoContatoDto(
-            //        r.Assunto,
-            //        r.Data,
-            //        r.HoraInicio,
-            //        r.HoraTermino
-            //    )).ToImmutableList()
-            //);
-
             var result = mapper.Map<SelecionarContatoPorIdResult>(registro);
 
             return Result.Ok(result);

@@ -26,28 +26,11 @@ public class EditarContatoCommandHandler(
 
         try
         {
-            //var contatoEditado = new Contato(
-            //    command.Nome,
-            //    command.Telefone,
-            //    command.Email,
-            //    command.Empresa,
-            //    command.Cargo
-            //);
-
             var contatoEditado = mapper.Map<Contato>(command);
 
             await repositorioContato.EditarAsync(command.Id, contatoEditado);
 
             await unitOfWork.CommitAsync();
-
-            //var result = new EditarContatoResult(
-            //    contatoEditado.Id,
-            //    contatoEditado.Nome,
-            //    contatoEditado.Telefone,
-            //    contatoEditado.Email,
-            //    contatoEditado.Empresa,
-            //    contatoEditado.Cargo
-            //);
 
             var result = mapper.Map<EditarContatoResult>(contatoEditado);
 

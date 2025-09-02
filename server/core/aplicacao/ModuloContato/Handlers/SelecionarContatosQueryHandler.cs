@@ -18,23 +18,9 @@ public class SelecionarContatosQueryHandler(
     {
         try
         {
-            List<Contato> registros;
-
-            if (query.Quantidade.HasValue)
-                registros = await repositorioContato.SelecionarRegistrosAsync(query.Quantidade.Value);
-            else
-                registros = await repositorioContato.SelecionarRegistrosAsync();
-
-            //var result = new SelecionarContatosResult(
-            //    registros.Select(r => new SelecionarContatosDto(
-            //        r.Id,
-            //        r.Nome,
-            //        r.Telefone,
-            //        r.Email,
-            //        r.Empresa,
-            //        r.Cargo
-            //    )).ToImmutableList()
-            //);
+            var registros = query.Quantidade.HasValue ?
+                await repositorioContato.SelecionarRegistrosAsync(query.Quantidade.Value) :
+                await repositorioContato.SelecionarRegistrosAsync();
 
             var result = mapper.Map<SelecionarContatosResult>(registros);
 

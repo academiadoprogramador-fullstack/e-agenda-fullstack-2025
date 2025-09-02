@@ -26,21 +26,11 @@ public class CadastrarContatoCommandHandler(
 
         try
         {
-            //var contato = new Contato(
-            //    command.Nome,
-            //    command.Telefone,
-            //    command.Email,
-            //    command.Empresa,
-            //    command.Cargo
-            //);
-
             var contato = mapper.Map<Contato>(command);
 
             await repositorioContato.CadastrarAsync(contato);
 
             await unitOfWork.CommitAsync();
-
-            //var result = new CadastrarContatoResult(contato.Id);
 
             var result = mapper.Map<CadastrarContatoResult>(contato);
 
