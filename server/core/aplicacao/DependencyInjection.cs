@@ -18,6 +18,13 @@ public static class DependencyInjection
 
         services.AddMediatR(config =>
         {
+            var licenseKey = configuration["AUTOMAPPER_LICENSE_KEY"];
+
+            if (string.IsNullOrWhiteSpace(licenseKey))
+                throw new Exception("A variável AUTOMAPPER_LICENSE_KEY não foi fornecida.");
+
+            config.LicenseKey = licenseKey;
+
             var assembly = typeof(DependencyInjection).Assembly;
 
             config.RegisterServicesFromAssembly(assembly);

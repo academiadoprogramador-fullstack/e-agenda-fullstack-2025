@@ -5,7 +5,6 @@ using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using System.Collections.Immutable;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 

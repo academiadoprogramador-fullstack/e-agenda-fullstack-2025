@@ -1,5 +1,5 @@
+using AutoMapper;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
-using eAgenda.Core.Dominio.ModuloContato;
 using eAgenda.WebApi.Models.ModuloContato;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,25 +8,19 @@ namespace eAgenda.WebApi.Controllers;
 
 [ApiController]
 [Route("contatos")]
-public class ContatoController(IMediator mediator) : ControllerBase
+public class ContatoController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpPost]
     public async Task<ActionResult<CadastrarContatoResponse>> Cadastrar(CadastrarContatoRequest request)
     {
-        var command = new CadastrarContatoCommand(
-             request.Nome,
-             request.Telefone,
-             request.Email,
-             request.Empresa,
-             request.Cargo
-        );
+        var command = mapper.Map<CadastrarContatoCommand>(request);
 
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
             return BadRequest();
 
-        var response = new CadastrarContatoResponse(result.Value.Id);
+        var response = mapper.Map<CadastrarContatoResponse>(result.Value);
 
         return Created(string.Empty, response);
     }
@@ -34,33 +28,20 @@ public class ContatoController(IMediator mediator) : ControllerBase
     [HttpPut("{id:guid}")]
     public async Task<ActionResult<EditarContatoResponse>> Editar(Guid id, EditarContatoRequest request)
     {
-        var command = new EditarContatoCommand(
-           id,
-           request.Nome,
-           request.Telefone,
-           request.Email,
-           request.Empresa,
-           request.Cargo
-       );
+        var command = mapper.Map<(Guid, EditarContatoRequest), EditarContatoCommand>((id, request));
 
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
             return BadRequest();
 
-        var response = new EditarContatoResponse(
-            result.Value.Nome,
-            result.Value.Telefone,
-            result.Value.Email,
-            result.Value.Empresa,
-            result.Value.Cargo
-        );
+        var response = mapper.Map<EditarContatoResponse>(result.Value);
 
         return Ok(response);
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<ActionResult<EditarContatoResponse>> Excluir(Guid id)
+    public async Task<ActionResult<ExcluirContatoResponse>> Excluir(Guid id)
     {
         var command = new ExcluirContatoCommand(id);
 
@@ -77,17 +58,14 @@ public class ContatoController(IMediator mediator) : ControllerBase
         [FromQuery] SelecionarContatosRequest? request
     )
     {
-        var query = new SelecionarContatosQuery(request?.Quantidade);
+        var query = mapper.Map<SelecionarContatosQuery>(request);
 
         var result = await mediator.Send(query);
 
         if (result.IsFailed)
             return BadRequest();
 
-        var response = new SelecionarContatosResponse(
-             result.Value.Contatos.Count,
-             result.Value.Contatos
-         );
+        var response = mapper.Map<SelecionarContatosResponse>(result.Value);
 
         return Ok(response);
     }
@@ -102,15 +80,7 @@ public class ContatoController(IMediator mediator) : ControllerBase
         if (result.IsFailed)
             return NotFound(id);
 
-        var response = new SelecionarContatoPorIdResponse(
-            result.Value.Id,
-            result.Value.Nome,
-            result.Value.Telefone,
-            result.Value.Email,
-            result.Value.Empresa,
-            result.Value.Cargo,
-            result.Value.Compromissos
-        );
+        var response = mapper.Map<SelecionarContatoPorIdResult>(result.Value);
 
         return Ok(response);
     }
