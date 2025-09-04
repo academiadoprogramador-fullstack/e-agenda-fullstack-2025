@@ -1,6 +1,7 @@
 using AutoMapper;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.WebApi.Models.ModuloContato;
+using FluentResults;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,18 @@ public class ContatoController(IMediator mediator, IMapper mapper) : ControllerB
         var result = await mediator.Send(command);
 
         if (result.IsFailed)
-            return BadRequest();
+        {
+            if (result.HasError(e => e.HasMetadata("TipoErro", e => e.Equals("RequisicaoInvalida"))))
+            {
+                var errosDeValidacao = result.Errors
+                    .SelectMany(e => e.Reasons.OfType<IError>())
+                    .Select(e => e.Message);
+
+                return BadRequest(errosDeValidacao);
+            }
+
+            return StatusCode(StatusCodes.Status500InternalServerError);
+        }
 
         var response = mapper.Map<CadastrarContatoResponse>(result.Value);
 

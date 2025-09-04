@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using FluentValidation;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Serilog;
@@ -40,6 +41,8 @@ public static class DependencyInjection
             config.LicenseKey = licenseKey;
 
         }, typeof(DependencyInjection).Assembly);
+
+        services.AddValidatorsFromAssemblyContaining(typeof(DependencyInjection));
 
         return services;
     }
