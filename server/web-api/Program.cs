@@ -1,7 +1,9 @@
 using eAgenda.Core.Aplicacao;
 using eAgenda.Infraestrutura.Orm;
 using eAgenda.WebApi.AutoMapper;
+using eAgenda.WebApi.Identity;
 using eAgenda.WebApi.Orm;
+using eAgenda.WebApi.Swagger;
 
 namespace eAgenda.WebApi;
 
@@ -18,11 +20,12 @@ public class Program
 
         builder.Services.AddAutoMapperProfiles(builder.Configuration);
 
+        builder.Services.AddIdentityProviderConfig(builder.Configuration);
+
         builder.Services.AddControllers();
 
         // Swagger/OpenAPI https://aka.ms/aspnetcore/swashbuckle
-        builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerConfig();
 
         var app = builder.Build();
 
@@ -35,6 +38,8 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+
+        app.UseAuthentication();
 
         app.UseAuthorization();
 
