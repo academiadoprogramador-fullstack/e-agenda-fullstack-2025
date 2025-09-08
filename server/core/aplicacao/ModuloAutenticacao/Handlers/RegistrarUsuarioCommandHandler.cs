@@ -9,10 +9,11 @@ namespace eAgenda.Core.Aplicacao.ModuloAutenticacao.Handlers;
 
 public class RegistrarUsuarioCommandHandler(
     UserManager<Usuario> userManager,
-    ITokenProvider tokenProvider
-) : IRequestHandler<RegistrarUsuarioCommand, Result<AccessToken>>
+    IAccessTokenProvider tokenProvider,
+    IRefreshTokenProvider refreshTokenProvider
+) : IRequestHandler<RegistrarUsuarioCommand, Result<(AccessToken, RefreshToken)>>
 {
-    public async Task<Result<AccessToken>> Handle(RegistrarUsuarioCommand command, CancellationToken cancellationToken)
+    public async Task<Result<(AccessToken, RefreshToken)>> Handle(RegistrarUsuarioCommand command, CancellationToken cancellationToken)
     {
         if (!command.Senha.Equals(command.ConfirmarSenha))
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro("A confirmação de senha falhou."));
@@ -23,7 +24,6 @@ public class RegistrarUsuarioCommandHandler(
             UserName = command.Email,
             Email = command.Email
         };
-
 
         var usuarioResult = await userManager.CreateAsync(usuario, command.Senha);
 
@@ -47,11 +47,16 @@ public class RegistrarUsuarioCommandHandler(
             return Result.Fail(ResultadosErro.RequisicaoInvalidaErro(erros));
         }
 
-        var tokenAcesso = tokenProvider.GerarAccessToken(usuario);
+        var accessToken = tokenProvider.GerarAccessToken(usuario);
 
-        if (tokenAcesso is null)
+        if (accessToken is null)
             return Result.Fail(ResultadosErro.ExcecaoInternaErro(new Exception("Falha ao gerar token de acesso.")));
 
-        return Result.Ok(tokenAcesso!);
+        var refreshToken = await refreshTokenProvider.GerarRefreshTokenAsync(usuario);
+
+        if (accessToken is null)
+            return Result.Fail(ResultadosErro.ExcecaoInternaErro(new Exception("Falha ao gerar token de rotação.")));
+
+        return Result.Ok((accessToken, refreshToken));
     }
 }

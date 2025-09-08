@@ -7,7 +7,7 @@ using System.Text;
 
 namespace eAgenda.Core.Aplicacao.ModuloAutenticacao;
 
-public class JwtProvider : ITokenProvider
+public class JwtProvider : IAccessTokenProvider
 {
     private readonly string audienciaValida;
     private readonly string chaveAssinaturaJwt;
@@ -42,7 +42,8 @@ public class JwtProvider : ITokenProvider
             [
                 new Claim(JwtRegisteredClaimNames.Sub, usuario.Id.ToString()),
                 new Claim(JwtRegisteredClaimNames.UniqueName, usuario.UserName!),
-                new Claim(JwtRegisteredClaimNames.Email, usuario.Email!)
+                new Claim(JwtRegisteredClaimNames.Email, usuario.Email!),
+                new Claim("ver", usuario.AccessTokenVersion.ToString())
             ]),
             SigningCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(chaveEmBytes),

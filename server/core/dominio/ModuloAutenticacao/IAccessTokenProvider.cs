@@ -1,6 +1,6 @@
 ﻿namespace eAgenda.Core.Dominio.ModuloAutenticacao;
 
-public interface ITokenProvider
+public interface IAccessTokenProvider
 {
     AccessToken GerarAccessToken(Usuario usuario);
 }

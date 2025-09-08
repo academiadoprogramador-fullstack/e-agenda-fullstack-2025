@@ -20,6 +20,8 @@ public class AppDbContext(DbContextOptions options, ITenantProvider? tenantProvi
     public DbSet<Tarefa> Tarefas { get; set; }
     public DbSet<ItemTarefa> ItensTarefa { get; set; }
 
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         if (tenantProvider is not null)
@@ -39,6 +41,13 @@ public class AppDbContext(DbContextOptions options, ITenantProvider? tenantProvi
             modelBuilder.Entity<Tarefa>()
                 .HasQueryFilter(x => x.UsuarioId.Equals(tenantProvider.UsuarioId));
         }
+
+        modelBuilder.Entity<RefreshToken>(b =>
+        {
+            b.HasKey(x => x.Id);
+            b.HasIndex(x => new { x.UsuarioId, x.TokenHash }).IsUnique();
+            b.Property(x => x.TokenHash).HasMaxLength(128).IsRequired(); // SHA256 base64
+        });
 
         var assembly = typeof(AppDbContext).Assembly;
 

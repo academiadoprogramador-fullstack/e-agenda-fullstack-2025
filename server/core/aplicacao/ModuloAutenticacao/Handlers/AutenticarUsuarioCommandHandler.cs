@@ -6,13 +6,15 @@ using MediatR;
 using Microsoft.AspNetCore.Identity;
 
 namespace eAgenda.Core.Aplicacao.ModuloAutenticacao.Handlers;
+
 public class AutenticarUsuarioCommandHandler(
     SignInManager<Usuario> signInManager,
     UserManager<Usuario> userManager,
-    ITokenProvider tokenProvider
-) : IRequestHandler<AutenticarUsuarioCommand, Result<AccessToken>>
+    IAccessTokenProvider tokenProvider,
+    IRefreshTokenProvider refreshTokenProvider
+) : IRequestHandler<AutenticarUsuarioCommand, Result<(AccessToken, RefreshToken)>>
 {
-    public async Task<Result<AccessToken>> Handle(AutenticarUsuarioCommand request, CancellationToken cancellationToken)
+    public async Task<Result<(AccessToken, RefreshToken)>> Handle(AutenticarUsuarioCommand request, CancellationToken cancellationToken)
     {
         var usuarioEncontrado = await userManager.FindByEmailAsync(request.Email);
 
@@ -30,7 +32,9 @@ public class AutenticarUsuarioCommandHandler(
         {
             var tokenAcesso = tokenProvider.GerarAccessToken(usuarioEncontrado);
 
-            return Result.Ok(tokenAcesso);
+            var refreshToken = await refreshTokenProvider.GerarRefreshTokenAsync(usuarioEncontrado);
+
+            return Result.Ok((tokenAcesso, refreshToken));
         }
 
         if (resultadoLogin.IsLockedOut)

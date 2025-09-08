@@ -4,6 +4,8 @@ using eAgenda.Infraestrutura.Orm.Compartilhado;
 using Microsoft.AspNetCore.Authentication.JwtBearer; // necessária instalação
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 
 namespace eAgenda.WebApi.Identity;
@@ -13,7 +15,8 @@ public static class IdentityConfig
     public static void AddIdentityProviderConfig(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ITenantProvider, IdentityTenantProvider>();
-        services.AddScoped<ITokenProvider, JwtProvider>();
+        services.AddScoped<IAccessTokenProvider, JwtProvider>();
+        services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
 
         services.AddIdentity<Usuario, Cargo>(options =>
         {
@@ -61,6 +64,37 @@ public static class IdentityConfig
                 ValidateAudience = true,
                 ValidateIssuer = true,
                 ValidateLifetime = true
+            };
+
+            x.Events = new JwtBearerEvents
+            {
+                OnTokenValidated = async context =>
+                {
+                    var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<Usuario>>();
+                    var userId = context.Principal!.FindFirstValue(JwtRegisteredClaimNames.Sub)
+                                ?? context.Principal!.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                    if (!Guid.TryParse(userId, out var uid))
+                    {
+                        context.Fail("Invalid sub");
+                        return;
+                    }
+
+                    var user = await userManager.FindByIdAsync(uid.ToString());
+
+                    if (user is null)
+                    {
+                        context.Fail("User not found");
+                        return;
+                    }
+
+                    var verClaim = context.Principal?.FindFirst("ver")?.Value;
+
+                    if (!int.TryParse(verClaim, out var tokenVer) || tokenVer != user.AccessTokenVersion)
+                    {
+                        context.Fail("Access token revoked");
+                    }
+                }
             };
         });
     }

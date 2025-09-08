@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using eAgenda.Core.Aplicacao.ModuloAutenticacao.Commands;
 using eAgenda.Core.Dominio.ModuloAutenticacao;
+using eAgenda.WebApi.Identity;
 using eAgenda.WebApi.Models.ModuloAutenticacao;
 using FluentResults;
 using MediatR;
@@ -11,7 +12,10 @@ namespace eAgenda.WebApi.Controllers;
 
 [ApiController]
 [Route("auth")]
-public class AutenticacaoController(IMediator mediator, IMapper mapper) : Controller
+public class AutenticacaoController(
+    IMediator mediator,
+    IMapper mapper
+) : Controller
 {
     [HttpPost("registrar")]
     public async Task<ActionResult<AccessToken>> Registrar(RegistrarUsuarioRequest request)
@@ -34,7 +38,12 @@ public class AutenticacaoController(IMediator mediator, IMapper mapper) : Contro
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        return Ok(result.Value);
+        var accessKey = result.Value.Item1;
+        var resfreshKey = result.Value.Item2;
+
+        RefreshCookieService.Set(Response, resfreshKey);
+
+        return Ok(accessKey);
     }
 
     [HttpPost("autenticar")]
@@ -58,7 +67,33 @@ public class AutenticacaoController(IMediator mediator, IMapper mapper) : Contro
             return StatusCode(StatusCodes.Status500InternalServerError);
         }
 
-        return Ok(result.Value);
+        var accessKey = result.Value.Item1;
+        var resfreshKey = result.Value.Item2;
+
+        RefreshCookieService.Set(Response, resfreshKey);
+
+        return Ok(accessKey);
+    }
+
+    [HttpPost("refresh")]
+    public async Task<IActionResult> Rotacionar()
+    {
+        var refreshToken = RefreshCookieService.Get(Request);
+
+        if (refreshToken is null)
+            return Unauthorized("O token de rotação não foi encontrado.");
+
+        var result = await mediator.Send(new RotacionarTokenCommand(refreshToken));
+
+        if (result.IsFailed)
+            return StatusCode(StatusCodes.Status500InternalServerError);
+
+        var accessKey = result.Value.Item1;
+        var resfreshKey = result.Value.Item2;
+
+        RefreshCookieService.Set(Response, resfreshKey);
+
+        return Ok(accessKey);
     }
 
     [HttpPost("sair")]
@@ -69,6 +104,8 @@ public class AutenticacaoController(IMediator mediator, IMapper mapper) : Contro
 
         if (result.IsFailed)
             return StatusCode(StatusCodes.Status500InternalServerError);
+
+        RefreshCookieService.Clear(Response);
 
         return NoContent();
     }

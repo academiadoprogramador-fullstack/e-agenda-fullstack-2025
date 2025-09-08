@@ -5,6 +5,7 @@ namespace eAgenda.Core.Dominio.ModuloAutenticacao;
 public class Usuario : IdentityUser<Guid>
 {
     public string FullName { get; set; }
+    public int AccessTokenVersion { get; set; } = 1;
 
     public Usuario()
     {
