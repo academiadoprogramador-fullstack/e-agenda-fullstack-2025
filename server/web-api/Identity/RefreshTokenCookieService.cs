@@ -2,7 +2,7 @@
 
 namespace eAgenda.WebApi.Identity;
 
-public static class RefreshCookieService
+public static class RefreshTokenCookieService
 {
     private static readonly string nome = "eAgenda.RefreshToken";
 

@@ -41,7 +41,7 @@ public class AutenticacaoController(
         var accessKey = result.Value.Item1;
         var resfreshKey = result.Value.Item2;
 
-        RefreshCookieService.Set(Response, resfreshKey);
+        RefreshTokenCookieService.Set(Response, resfreshKey);
 
         return Ok(accessKey);
     }
@@ -70,7 +70,7 @@ public class AutenticacaoController(
         var accessKey = result.Value.Item1;
         var resfreshKey = result.Value.Item2;
 
-        RefreshCookieService.Set(Response, resfreshKey);
+        RefreshTokenCookieService.Set(Response, resfreshKey);
 
         return Ok(accessKey);
     }
@@ -78,7 +78,7 @@ public class AutenticacaoController(
     [HttpPost("refresh")]
     public async Task<IActionResult> Rotacionar()
     {
-        var refreshToken = RefreshCookieService.Get(Request);
+        var refreshToken = RefreshTokenCookieService.Get(Request);
 
         if (refreshToken is null)
             return Unauthorized("O token de rotação não foi encontrado.");
@@ -91,7 +91,7 @@ public class AutenticacaoController(
         var accessKey = result.Value.Item1;
         var resfreshKey = result.Value.Item2;
 
-        RefreshCookieService.Set(Response, resfreshKey);
+        RefreshTokenCookieService.Set(Response, resfreshKey);
 
         return Ok(accessKey);
     }
@@ -105,7 +105,7 @@ public class AutenticacaoController(
         if (result.IsFailed)
             return StatusCode(StatusCodes.Status500InternalServerError);
 
-        RefreshCookieService.Clear(Response);
+        RefreshTokenCookieService.Clear(Response);
 
         return NoContent();
     }
