@@ -15,7 +15,7 @@ public static class IdentityConfig
     public static void AddIdentityProviderConfig(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddScoped<ITenantProvider, IdentityTenantProvider>();
-        services.AddScoped<IAccessTokenProvider, JwtProvider>();
+        services.AddScoped<IAccessTokenProvider, AccessTokenProvider>();
         services.AddScoped<IRefreshTokenProvider, RefreshTokenProvider>();
 
         services.AddIdentity<Usuario, Cargo>(options =>
