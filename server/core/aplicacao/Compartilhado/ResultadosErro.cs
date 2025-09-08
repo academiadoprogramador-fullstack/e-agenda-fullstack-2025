@@ -32,6 +32,13 @@ public abstract class ResultadosErro
             .WithMetadata("TipoErro", "RegistroNaoEncontrado");
     }
 
+    public static Error RegistroNaoEncontradoErro(string email)
+    {
+        return new Error("Registro não encontrado")
+            .CausedBy("Não foi possível obter o registro: " + email)
+            .WithMetadata("TipoErro", "RegistroNaoEncontrado");
+    }
+
     public static Error ExclusaoBloqueadaErro(string mensagemErro)
     {
         return new Error("Exclusão bloqueada")

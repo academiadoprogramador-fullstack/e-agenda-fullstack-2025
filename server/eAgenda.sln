@@ -17,6 +17,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAgenda.Infraestrutura.Orm"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAgenda.WebApi", "web-api\eAgenda.WebApi.csproj", "{77D4358D-8444-0A17-2423-03EBAF944D97}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Ferramentas", "4. Ferramentas", "{52A500C8-3F9C-474F-BABA-82B659F2D593}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "eAgenda.Tools.TokenGenerator", "eAgenda.Tools.TokenGenerator\eAgenda.Tools.TokenGenerator.csproj", "{58202304-9BD2-46F8-B080-A7C5447DE346}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,10 @@ Global
 		{77D4358D-8444-0A17-2423-03EBAF944D97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{77D4358D-8444-0A17-2423-03EBAF944D97}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77D4358D-8444-0A17-2423-03EBAF944D97}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58202304-9BD2-46F8-B080-A7C5447DE346}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58202304-9BD2-46F8-B080-A7C5447DE346}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58202304-9BD2-46F8-B080-A7C5447DE346}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58202304-9BD2-46F8-B080-A7C5447DE346}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -48,6 +56,7 @@ Global
 		{04FAE5E5-5D30-1511-CDBC-997A4A6E332B} = {6D341669-9DC4-4FA2-9DEF-E2E5E3E90CE2}
 		{824FAF1A-FECC-821B-5BAE-805F7DDD2AC0} = {FE7875EF-FE34-487A-94DA-C7ABF5AE599D}
 		{77D4358D-8444-0A17-2423-03EBAF944D97} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{58202304-9BD2-46F8-B080-A7C5447DE346} = {52A500C8-3F9C-474F-BABA-82B659F2D593}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8967B18A-D26D-4FA6-9BB8-4AF032A30112}
