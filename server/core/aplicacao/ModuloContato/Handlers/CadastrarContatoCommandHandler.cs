@@ -7,6 +7,7 @@ using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
@@ -17,6 +18,7 @@ public class CadastrarContatoCommandHandler(
     IMapper mapper,
     IRepositorioContato repositorioContato,
     IUnitOfWork unitOfWork,
+    IDistributedCache cache,
     ILogger<CadastrarContatoCommandHandler> logger
 ) : IRequestHandler<CadastrarContatoCommand, Result<CadastrarContatoResult>>
 {
@@ -48,6 +50,11 @@ public class CadastrarContatoCommandHandler(
             await repositorioContato.CadastrarAsync(contato);
 
             await unitOfWork.CommitAsync();
+
+            // Invalida o cache
+            var cacheKey = $"contatos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
+
+            await cache.RemoveAsync(cacheKey, cancellationToken);
 
             var result = mapper.Map<CadastrarContatoResult>(contato);
 
