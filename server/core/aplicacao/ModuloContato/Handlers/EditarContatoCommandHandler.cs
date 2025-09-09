@@ -10,9 +10,9 @@ using Microsoft.Extensions.Logging;
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
 public class EditarContatoCommandHandler(
-    IMapper mapper,
     IRepositorioContato repositorioContato,
     IUnitOfWork unitOfWork,
+    IMapper mapper,
     ILogger<EditarContatoCommandHandler> logger
 ) : IRequestHandler<EditarContatoCommand, Result<EditarContatoResult>>
 {
