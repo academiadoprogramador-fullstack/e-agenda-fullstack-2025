@@ -19,23 +19,20 @@ public class SelecionarContatosQueryHandler(
     ILogger<SelecionarContatosQueryHandler> logger
 ) : IRequestHandler<SelecionarContatosQuery, Result<SelecionarContatosResult>>
 {
-    private static readonly TimeSpan CacheTtl = TimeSpan.FromSeconds(60);
-
-    public async Task<Result<SelecionarContatosResult>> Handle(SelecionarContatosQuery query, CancellationToken ct)
+    public async Task<Result<SelecionarContatosResult>> Handle(
+        SelecionarContatosQuery query, CancellationToken cancellationToken)
     {
         try
         {
-            var tenantId = tenantProvider.UsuarioId.GetValueOrDefault();
+            var cacheQuery = query.Quantidade.HasValue ? $"q={query.Quantidade.Value}" : "q=all";
+            var cacheKey = $"contatos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:{cacheQuery}";
 
-            var queryCache = query.Quantidade.HasValue ? $"q={query.Quantidade.Value}" : "q=all";
-            var chaveCache = $"contatos:u:{tenantId}:{queryCache}";
+            // 1) Tenta obter cache
+            var jsonCache = await cache.GetStringAsync(cacheKey, cancellationToken);
 
-            // 1) Tenta cache
-            var jsonEmCache = await cache.GetStringAsync(chaveCache, ct);
-
-            if (!string.IsNullOrWhiteSpace(jsonEmCache))
+            if (!string.IsNullOrWhiteSpace(jsonCache))
             {
-                var registrosEmCache = JsonSerializer.Deserialize<SelecionarContatosResult>(jsonEmCache);
+                var registrosEmCache = JsonSerializer.Deserialize<SelecionarContatosResult>(jsonCache);
 
                 if (registrosEmCache is not null)
                     return Result.Ok(registrosEmCache);
@@ -49,12 +46,16 @@ public class SelecionarContatosQueryHandler(
             var resultDto = mapper.Map<SelecionarContatosResult>(registros);
 
             // 3) Grava no cache
-            var payload = JsonSerializer.Serialize(resultDto);
+            var jsonPayload = JsonSerializer.Serialize(resultDto);
 
-            await cache.SetStringAsync(chaveCache, payload, new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = CacheTtl
-            }, ct);
+            var cacheOptions = new DistributedCacheEntryOptions { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(60) };
+
+            await cache.SetStringAsync(
+                cacheKey,
+                jsonPayload,
+                cacheOptions,
+                cancellationToken
+            );
 
             return Result.Ok(resultDto);
         }

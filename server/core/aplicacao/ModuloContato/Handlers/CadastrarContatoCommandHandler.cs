@@ -23,9 +23,9 @@ public class CadastrarContatoCommandHandler(
 ) : IRequestHandler<CadastrarContatoCommand, Result<CadastrarContatoResult>>
 {
     public async Task<Result<CadastrarContatoResult>> Handle(
-        CadastrarContatoCommand command, CancellationToken ct)
+        CadastrarContatoCommand command, CancellationToken cancellationToken)
     {
-        var resultadoValidacao = await validator.ValidateAsync(command, ct);
+        var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
 
         if (!resultadoValidacao.IsValid)
         {
@@ -51,9 +51,8 @@ public class CadastrarContatoCommandHandler(
 
             await unitOfWork.CommitAsync();
 
-            var tenantId = contato.UsuarioId;
-
-            await cache.RemoveAsync($"contatos:u:{tenantId}:q=all", ct);
+            // Invalida o cache
+            await cache.RemoveAsync($"contatos:u={contato.UsuarioId}:q=all", cancellationToken);
 
             var result = mapper.Map<CadastrarContatoResult>(contato);
 
