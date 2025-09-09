@@ -2,17 +2,21 @@
 using eAgenda.Core.Aplicacao.Compartilhado;
 using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using eAgenda.Core.Dominio.Compartilhado;
+using eAgenda.Core.Dominio.ModuloAutenticacao;
 using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
 public class EditarContatoCommandHandler(
     IRepositorioContato repositorioContato,
+    ITenantProvider tenantProvider,
     IUnitOfWork unitOfWork,
     IMapper mapper,
+    IDistributedCache cache,
     ILogger<EditarContatoCommandHandler> logger
 ) : IRequestHandler<EditarContatoCommand, Result<EditarContatoResult>>
 {
@@ -30,6 +34,11 @@ public class EditarContatoCommandHandler(
             await repositorioContato.EditarAsync(command.Id, contatoEditado);
 
             await unitOfWork.CommitAsync();
+
+            // Invalida o cache
+            var cacheKey = $"contatos:u={tenantProvider.UsuarioId.GetValueOrDefault()}:q=all";
+
+            await cache.RemoveAsync(cacheKey, cancellationToken);
 
             var result = mapper.Map<EditarContatoResult>(contatoEditado);
 
