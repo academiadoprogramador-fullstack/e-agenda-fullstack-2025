@@ -38,6 +38,14 @@ public static class DependencyInjection
 
         services.AddValidatorsFromAssembly(assembly);
 
+        var redisConnectionString = configuration["REDIS_CONNECTION_STRING"];
+
+        services.AddStackExchangeRedisCache(opt =>
+        {
+            opt.Configuration = redisConnectionString;
+            opt.InstanceName = "eagenda";
+        });
+
         return services;
     }
    

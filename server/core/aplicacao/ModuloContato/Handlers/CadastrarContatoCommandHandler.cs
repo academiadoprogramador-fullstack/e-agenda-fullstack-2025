@@ -7,23 +7,25 @@ using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
 using FluentValidation;
 using MediatR;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
 public class CadastrarContatoCommandHandler(
-    ITenantProvider tenantProvider,
-    IValidator<CadastrarContatoCommand> validator,
-    IMapper mapper,
     IRepositorioContato repositorioContato,
     IUnitOfWork unitOfWork,
+    ITenantProvider tenantProvider,
+    IMapper mapper,
+    IDistributedCache cache,
+    IValidator<CadastrarContatoCommand> validator,
     ILogger<CadastrarContatoCommandHandler> logger
 ) : IRequestHandler<CadastrarContatoCommand, Result<CadastrarContatoResult>>
 {
     public async Task<Result<CadastrarContatoResult>> Handle(
-        CadastrarContatoCommand command, CancellationToken cancellationToken)
+        CadastrarContatoCommand command, CancellationToken ct)
     {
-        var resultadoValidacao = await validator.ValidateAsync(command);
+        var resultadoValidacao = await validator.ValidateAsync(command, ct);
 
         if (!resultadoValidacao.IsValid)
         {
@@ -48,6 +50,10 @@ public class CadastrarContatoCommandHandler(
             await repositorioContato.CadastrarAsync(contato);
 
             await unitOfWork.CommitAsync();
+
+            var tenantId = contato.UsuarioId;
+
+            await cache.RemoveAsync($"contatos:u:{tenantId}:q=all", ct);
 
             var result = mapper.Map<CadastrarContatoResult>(contato);
 
