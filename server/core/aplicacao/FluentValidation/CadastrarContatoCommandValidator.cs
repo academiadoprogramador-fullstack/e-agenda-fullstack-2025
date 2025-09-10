@@ -1,5 +1,4 @@
 ﻿using eAgenda.Core.Aplicacao.ModuloContato.Commands;
-using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using FluentValidation;
 
 namespace eAgenda.Core.Aplicacao.FluentValidation;

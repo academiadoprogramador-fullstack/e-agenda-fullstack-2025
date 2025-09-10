@@ -22,4 +22,8 @@
     <ProjectReference Include="..\infraestrutura\orm\eAgenda.Infraestrutura.Orm.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\ModuloCompromisso\" />
+  </ItemGroup>
+
 </Project>

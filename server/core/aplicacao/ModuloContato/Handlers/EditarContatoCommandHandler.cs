@@ -9,7 +9,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
