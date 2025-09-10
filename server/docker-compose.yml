@@ -1,0 +1,6 @@
+services:
+  eagenda.webapi:
+    image: ${DOCKER_REGISTRY-}eagendawebapi
+    build:
+      context: .
+      dockerfile: web-api/Dockerfile
