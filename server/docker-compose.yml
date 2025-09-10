@@ -1,0 +1,73 @@
+services:
+  eagenda.webapi:
+    image: ${DOCKER_REGISTRY-}eagendawebapi
+    build:
+      context: .
+      dockerfile: web-api/Dockerfile
+    container_name: eagenda.webapi
+    environment:
+        ASPNETCORE_ENVIRONMENT: Development
+        SQL_CONNECTION_STRING: Host=db;Port=5432;Database=eAgendaDb;Username=postgres;Password=YourStrongPassword
+        NEWRELIC_LICENSE_KEY: ${NEWRELIC_LICENSE_KEY}
+        AUTOMAPPER_LICENSE_KEY: ${AUTOMAPPER_LICENSE_KEY}
+        JWT_GENERATION_KEY: ${JWT_GENERATION_KEY}
+        JWT_AUDIENCE_DOMAIN: https://localhost:8081
+        REDIS_CONNECTION_STRING: cache:6379,abortConnect=false
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - eagenda-net
+
+  db:
+    image: postgres:16
+    container_name: eagenda.db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: eAgendaDb
+      POSTGRES_PASSWORD: YourStrongPassword
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d eAgendaDb"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "5432:5432"
+    networks:
+      - eagenda-net
+
+  cache:
+    image: redis:8.2.1
+    container_name: eagenda.redis
+    command: >
+      redis-server
+      --appendonly yes
+      --save 60 1000
+    environment:
+      name: eagenda-cache
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    ports:
+      - "6379:6379"
+    networks:
+      - eagenda-net
+
+networks:
+  eagenda-net:
+    driver: bridge
+
+volumes:
+  dbdata:
+  redisdata:
