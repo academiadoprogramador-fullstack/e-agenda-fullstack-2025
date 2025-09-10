@@ -26,9 +26,13 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
       - "5432:5432" 
+    volumes:
+      - dbdata:/var/lib/postgresql/data
 
   cache:
     environment:
       name: eagenda-cache
     ports:
       - "6379:6379"
+    volumes:
+      - redisdata:/data

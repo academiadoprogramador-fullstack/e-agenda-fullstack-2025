@@ -24,8 +24,6 @@ services:
       retries: 10
     networks:
       - eagenda-net
-    volumes:
-      - dbdata:/var/lib/postgresql/data
 
   cache:
     image: redis:8.2.1
@@ -41,11 +39,9 @@ services:
       retries: 10
     networks:
       - eagenda-net
-    volumes:
-      - redisdata:/data
 
 networks:
- eagenda-net:
+  eagenda-net:
     driver: bridge
 
 volumes:
