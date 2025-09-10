@@ -8,6 +8,8 @@ services:
       - AUTOMAPPER_LICENSE_KEY=${AUTOMAPPER_LICENSE_KEY}
       - JWT_GENERATION_KEY=${JWT_GENERATION_KEY}
       - JWT_AUDIENCE_DOMAIN=https://localhost:8081
+      - SQL_CONNECTION_STRING=Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+      - REDIS_CONNECTION_STRING=cache:6379,abortConnect=false
     ports:
       - "8080:8080"
       - "8081:8081"
@@ -16,3 +18,17 @@ services:
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+  
+  db:
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - "5432:5432" 
+
+  cache:
+    environment:
+      name: eagenda-cache
+    ports:
+      - "6379:6379"

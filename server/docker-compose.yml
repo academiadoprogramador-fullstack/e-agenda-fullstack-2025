@@ -1,6 +1,53 @@
 services:
   eagenda.webapi:
     image: ${DOCKER_REGISTRY-}eagendawebapi
+    container_name: eagenda.webapi 
     build:
       context: .
       dockerfile: web-api/Dockerfile
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    networks:
+      - eagenda-net
+  
+  db:
+    image: postgres:16
+    container_name: eagenda.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - eagenda-net
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+
+  cache:
+    image: redis:8.2.1
+    container_name: eagenda.redis
+    command: >
+      redis-server
+      --appendonly yes
+      --save 60 1000
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - eagenda-net
+    volumes:
+      - redisdata:/data
+
+networks:
+ eagenda-net:
+    driver: bridge
+
+volumes:
+  dbdata:
+  redisdata:
