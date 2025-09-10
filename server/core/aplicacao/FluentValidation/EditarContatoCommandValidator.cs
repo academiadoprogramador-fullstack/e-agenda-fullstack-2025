@@ -1,12 +1,11 @@
 ﻿using eAgenda.Core.Aplicacao.ModuloContato.Commands;
-using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using FluentValidation;
 
 namespace eAgenda.Core.Aplicacao.FluentValidation;
 
-public class CadastrarContatoCommandValidator : AbstractValidator<CadastrarContatoCommand>
+public class EditarContatoCommandValidator : AbstractValidator<EditarContatoCommand>
 {
-    public CadastrarContatoCommandValidator()
+    public EditarContatoCommandValidator()
     {
         RuleFor(x => x.Nome)
             .NotEmpty().WithMessage("O nome é obrigatório.")

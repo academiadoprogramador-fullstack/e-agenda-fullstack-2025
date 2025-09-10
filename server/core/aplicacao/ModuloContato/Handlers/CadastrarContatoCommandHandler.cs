@@ -25,7 +25,7 @@ public class CadastrarContatoCommandHandler(
     public async Task<Result<CadastrarContatoResult>> Handle(
         CadastrarContatoCommand command, CancellationToken cancellationToken)
     {
-        var resultadoValidacao = await validator.ValidateAsync(command);
+        var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
 
         if (!resultadoValidacao.IsValid)
         {

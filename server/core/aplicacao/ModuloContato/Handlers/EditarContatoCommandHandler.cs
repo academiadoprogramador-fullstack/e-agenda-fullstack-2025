@@ -5,9 +5,11 @@ using eAgenda.Core.Dominio.Compartilhado;
 using eAgenda.Core.Dominio.ModuloAutenticacao;
 using eAgenda.Core.Dominio.ModuloContato;
 using FluentResults;
+using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 
 namespace eAgenda.Core.Aplicacao.ModuloContato.Handlers;
 
@@ -17,11 +19,23 @@ public class EditarContatoCommandHandler(
     IUnitOfWork unitOfWork,
     IMapper mapper,
     IDistributedCache cache,
+    IValidator<EditarContatoCommand> validator,
     ILogger<EditarContatoCommandHandler> logger
 ) : IRequestHandler<EditarContatoCommand, Result<EditarContatoResult>>
 {
     public async Task<Result<EditarContatoResult>> Handle(EditarContatoCommand command, CancellationToken cancellationToken)
     {
+        var resultadoValidacao = await validator.ValidateAsync(command, cancellationToken);
+
+        if (!resultadoValidacao.IsValid)
+        {
+            var erros = resultadoValidacao.Errors.Select(e => e.ErrorMessage);
+
+            var erroFormatado = ResultadosErro.RequisicaoInvalidaErro(erros);
+
+            return Result.Fail(erroFormatado);
+        }
+
         var registros = await repositorioContato.SelecionarRegistrosAsync();
 
         if (registros.Any(i => i.Id.Equals(command.Id) && i.Nome.Equals(command.Nome)))
