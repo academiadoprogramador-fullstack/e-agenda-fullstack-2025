@@ -16,7 +16,6 @@ services:
   db:
     image: postgres:16
     container_name: eagenda.db
-    restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
