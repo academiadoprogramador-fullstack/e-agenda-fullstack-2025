@@ -16,23 +16,30 @@ public class CompromissoMappingProfile : Profile
         CreateMap<Compromisso, EditarCompromissoResult>();
 
         CreateMap<Compromisso, SelecionarCompromissoPorIdResult>()
-         .ConvertUsing(src => new SelecionarCompromissoPorIdResult(
-             src.Id,
-             src.Assunto,
-             src.Data,
-             src.HoraInicio,
-             src.HoraTermino,
-             src.Tipo,
-             src.Local,
-             src.Link,
-             src.Contato.Nome 
-         ));
+            .ConvertUsing(src => new SelecionarCompromissoPorIdResult(
+                src.Id,
+                src.Assunto,
+                src.Data,
+                src.HoraInicio,
+                src.HoraTermino,
+                src.Tipo,
+                src.Local,
+                src.Link,
+                src.Contato.Nome 
+            ));
 
         CreateMap<Compromisso, SelecionarCompromissosDto>()
-            .ForMember(
-                dest => dest.Contato,
-                opt => opt.MapFrom(src => src.Contato.Nome ?? null)
-            );
+           .ConvertUsing(src => new SelecionarCompromissosDto(
+                src.Id,
+                src.Assunto,
+                src.Data,
+                src.HoraInicio,
+                src.HoraTermino,
+                src.Tipo,
+                src.Local,
+                src.Link,
+                src.Contato.Nome
+            ));
 
         CreateMap<IEnumerable<Compromisso>, SelecionarCompromissosResult>()
          .ConvertUsing((src, dest, ctx) =>

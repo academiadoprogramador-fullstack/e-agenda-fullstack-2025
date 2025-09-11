@@ -4,6 +4,7 @@ using eAgenda.WebApi.AutoMapper;
 using eAgenda.WebApi.Identity;
 using eAgenda.WebApi.Orm;
 using eAgenda.WebApi.Swagger;
+using System.Text.Json.Serialization;
 
 namespace eAgenda.WebApi;
 
@@ -22,7 +23,11 @@ public class Program
 
         builder.Services.AddIdentityProviderConfig(builder.Configuration);
 
-        builder.Services.AddControllers();
+        builder.Services
+            .AddControllers()
+            .AddJsonOptions(options =>
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())
+            );
 
         // Swagger/OpenAPI https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddSwaggerConfig();

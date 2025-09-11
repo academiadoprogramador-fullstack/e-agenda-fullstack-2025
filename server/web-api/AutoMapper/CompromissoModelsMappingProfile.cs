@@ -44,7 +44,12 @@ public class CompromissoModelsMappingProfile : Profile
         CreateMap<Guid, ExcluirCompromissoCommand>()
           .ConstructUsing(src => new ExcluirCompromissoCommand(src));
 
+        CreateMap<Guid, SelecionarCompromissoPorIdQuery>()
+            .ConvertUsing(src => new SelecionarCompromissoPorIdQuery(src));
+
         CreateMap<SelecionarCompromissoPorIdResult, SelecionarCompromissoPorIdResponse>();
+
+        CreateMap<SelecionarCompromissosRequest, SelecionarCompromissosQuery>();
 
         CreateMap<SelecionarCompromissosResult, SelecionarCompromissosResponse>()
             .ConvertUsing((src, dest, ctx) => new SelecionarCompromissosResponse(
