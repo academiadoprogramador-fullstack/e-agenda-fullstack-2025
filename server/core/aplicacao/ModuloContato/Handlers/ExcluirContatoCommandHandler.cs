@@ -22,6 +22,14 @@ public class ExcluirContatoCommandHandler(
     {
         try
         {
+            var contatoSelecionado = await repositorioContato.SelecionarRegistroPorIdAsync(command.Id);
+
+            if (contatoSelecionado is null)
+                return Result.Fail(ResultadosErro.RegistroNaoEncontradoErro(command.Id));
+
+            if (contatoSelecionado.Compromissos.Count > 0)
+                return Result.Fail(ResultadosErro.ExclusaoBloqueadaErro("Existem compromissos relacionados à esse contato."));
+
             await repositorioContato.ExcluirAsync(command.Id);
 
             await unitOfWork.CommitAsync();

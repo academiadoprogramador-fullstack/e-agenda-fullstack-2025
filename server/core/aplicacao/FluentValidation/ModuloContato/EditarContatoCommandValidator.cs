@@ -1,7 +1,7 @@
 ﻿using eAgenda.Core.Aplicacao.ModuloContato.Commands;
 using FluentValidation;
 
-namespace eAgenda.Core.Aplicacao.FluentValidation;
+namespace eAgenda.Core.Aplicacao.FluentValidation.ModuloContato;
 
 public class EditarContatoCommandValidator : AbstractValidator<EditarContatoCommand>
 {
