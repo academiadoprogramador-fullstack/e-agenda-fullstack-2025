@@ -19,6 +19,13 @@ public static class SwaggerConfig
                 Example = new Microsoft.OpenApi.Any.OpenApiString("00:00:00")
             });
 
+            options.MapType<Guid>(() => new OpenApiSchema
+            {
+                Type = "string",
+                Format = "guid",
+                Example = new Microsoft.OpenApi.Any.OpenApiString("00000000-0000-0000-0000-000000000000")
+            });
+
             options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,

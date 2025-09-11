@@ -21,7 +21,6 @@ public class CadastrarCompromissoCommandValidator : AbstractValidator<CadastrarC
 
         }).Otherwise(() =>
         {
-
             RuleFor(x => x.Local)
                 .NotNull()
                 .NotEmpty();
