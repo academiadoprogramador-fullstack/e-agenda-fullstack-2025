@@ -26,8 +26,7 @@ public class Program
         builder.Services
             .AddControllers()
             .AddJsonOptions(options =>
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter())
-            );
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
         // Swagger/OpenAPI https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddSwaggerConfig();
